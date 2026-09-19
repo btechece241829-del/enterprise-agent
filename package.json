@@ -1,0 +1,15 @@
+{
+  "name": "sentinel-commerce-sim",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "pdfkit": "^0.16.0",
+    "qrcode": "^1.5.4",
+    "ws": "^8.18.3"
+  }
+}

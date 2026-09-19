@@ -1,0 +1,2 @@
+.network-help{font-size:11px;color:#6c778a;margin:0}.network-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.network-options label{border:1px solid #e3e8ef;border-radius:8px;padding:13px;display:flex;gap:9px;cursor:pointer}.network-options label:has(input:checked){border-color:#155dfc;background:#f4f7ff}.network-options span{display:grid;gap:4px;font-size:11px}.network-options small{color:#6c778a;font-weight:500;line-height:1.4}@media(max-width:800px){.network-options{grid-template-columns:1fr}}
+.simulation-options{grid-template-columns:1fr 1fr}

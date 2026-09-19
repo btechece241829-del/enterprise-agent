@@ -1,0 +1,2 @@
+.notification-ai{background:#f4f7ff!important;border-left:3px solid #155dfc;padding:9px 11px;border-radius:4px}
+.recovery-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.recovery-actions button{border:0;border-radius:7px;background:#155dfc;color:#fff;padding:10px 14px;font-weight:700;cursor:pointer}.recovery-actions button.secondary{background:#172033}.recovery-actions button:disabled{opacity:.6;cursor:wait}
