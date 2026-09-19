@@ -37,7 +37,11 @@ const server=http.createServer(async(req,res)=>{try{let u=new URL(req.url,'http:
  if(p==='/api/logs'&&m==='GET'){if(!requireRole(req,res,d,['SUPER_ADMIN','MANAGER','ANALYST']))return;let q=(u.searchParams.get('q')||'').toLowerCase();return json(res,200,d.logs.filter(x=>!q||JSON.stringify(x).toLowerCase().includes(q)))} if(p.startsWith('/api/logs/')&&m==='GET'){if(!requireRole(req,res,d,['SUPER_ADMIN','MANAGER','ANALYST']))return;let x=d.logs.find(x=>x.id===p.split('/').pop());return x?json(res,200,x):json(res,404,{error:'Log not found'})}
  if(p==='/api/audit'&&m==='GET'){if(!requireRole(req,res,d,['SUPER_ADMIN','MANAGER','ANALYST']))return;return json(res,200,d.audits)} if(p==='/api/reports/logs/pdf'&&m==='GET'){if(!requireRole(req,res,d,['SUPER_ADMIN','MANAGER','ANALYST']))return;let st=stats(d);audit(d,s.name,'REPORT_GENERATED','logs',null,'all');save(d);res.writeHead(200,{'Content-Type':'application/pdf','Content-Disposition':'attachment; filename="sentinel-report.pdf"'});return res.end(pdf(`Sentinel Commerce Audit Report | Generated ${now()} | Total events ${st.totalInjectionEvents} | Critical ${st.criticalEvents} | Successful orders ${st.successfulOrders} | Failed ${st.failedOrders} | Blocked ${st.blockedTransactions}`))}
  return json(res,404,{error:'API route not found'})} let file=p==='/'?'/index.html':p;let full=path.join(PUB,file);if(!full.startsWith(PUB)||!fs.existsSync(full)||fs.statSync(full).isDirectory())full=path.join(PUB,'index.html');let type=full.endsWith('.js')?'text/javascript':full.endsWith('.css')?'text/css':'text/html';res.writeHead(200,{'Content-Type':type});res.end(fs.readFileSync(full));}catch(e){console.error(e);json(res,500,{error:'Unexpected server error'})}});
-const wss = new WebSocketServer({ server });
+let wss;
 function broadcast(message){if(!wss)return;let payload=JSON.stringify(message);for(const client of wss.clients)if(client.readyState===WebSocket.OPEN)client.send(payload)}
-wss.on('connection',socket=>socket.send(JSON.stringify({type:'connected',timestamp:now()})));
-server.listen(PORT,'0.0.0.0',()=>console.log(`Sentinel Commerce running at http://localhost:${PORT}`));
+if(require.main===module){
+  wss = new WebSocketServer({ server });
+  wss.on('connection',socket=>socket.send(JSON.stringify({type:'connected',timestamp:now()})));
+  server.listen(PORT,'0.0.0.0',()=>console.log(`Sentinel Commerce running at http://localhost:${PORT}`));
+}
+module.exports=(req,res)=>server.emit('request',req,res);
