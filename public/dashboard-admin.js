@@ -10,6 +10,7 @@
     window.render();
   }
   function addControls() {
+    if(!['/dashboard','/dashboard/overview','/dashboard/logs','/overview','/logs'].includes(location.pathname))return;
     const main = document.querySelector('.dash-main');
     const admin = JSON.parse(localStorage.getItem('sentinelAdminSession') || 'null');
     if (!main || admin?.role !== 'SUPER_ADMIN' || main.querySelector('.admin-delete-controls')) return;
@@ -21,6 +22,7 @@
     main.querySelector('h1')?.insertAdjacentElement('afterend', controls);
   }
   async function addRowControls() {
+    if(!['/dashboard','/dashboard/overview','/dashboard/logs','/overview','/logs'].includes(location.pathname))return;
     const main = document.querySelector('.dash-main');
     const admin = JSON.parse(localStorage.getItem('sentinelAdminSession') || 'null');
     if (!main || admin?.role !== 'SUPER_ADMIN' || main.dataset.rowControls) return;
