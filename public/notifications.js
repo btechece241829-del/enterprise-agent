@@ -14,7 +14,7 @@
   function liveUpdates(){
     if(window.sentinelNotificationSocket||!['/notification','/notfication','/notifican'].includes(location.pathname))return;
     const socket=new WebSocket(`${location.protocol==='https:'?'wss':'ws'}://${location.host}`);window.sentinelNotificationSocket=socket;
-    socket.onmessage=event=>{try{if(JSON.parse(event.data).type==='data-updated'&&['/notification','/notfication','/notifican'].includes(location.pathname)){const root=document.querySelector('#app');delete root.dataset.notifications;showNotifications()}}catch{}};
+    socket.onmessage=event=>{try{const msg=JSON.parse(event.data);const onNotifPage=['/notification','/notfication','/notifican'].includes(location.pathname);if(onNotifPage&&(msg.type==='data-updated'||msg.type==='network-reorder')){const root=document.querySelector('#app');delete root.dataset.notifications;showNotifications();if(msg.type==='network-reorder'){const buyer=readBuyer();if(buyer&&msg.sessionId===buyer.id){const banner=document.createElement('div');banner.className='reorder-toast';banner.innerHTML=`<b>✓ Order reordered</b> — Sentinel automatically placed a new order for <b>${msg.productName||'your item'}</b>.`;document.body.append(banner);setTimeout(()=>banner.remove(),5000)}}}}catch{}};
     socket.onclose=()=>{delete window.sentinelNotificationSocket};
   }
   async function showNotifications(){
@@ -24,7 +24,20 @@
     try{
       const buyer=readBuyer();if(!buyer)throw Error('Enter your name first to view your notifications.');
       const response=await fetch('/api/notifications',{headers:{Authorization:`Bearer ${buyer.token}`}}),data=await response.json();if(!response.ok)throw Error(data.error||'Unable to load notifications.');
-      const cards=data.notifications.length?data.notifications.map(item=>`<article class="notification-card"><div><span class="status ${esc(item.severity)}">${esc(item.status)}</span><small>${new Date(item.timestamp).toLocaleString()}</small></div><h2>${esc(item.title)}</h2><p>${esc(item.message)}</p><p><b>Product:</b> ${esc(item.productName)}<br><b>Order:</b> ${esc(item.orderId)}<br><b>Payment:</b> ${esc(item.paymentStatus)} · <b>Order status:</b> ${esc(item.orderStatus)}</p><p class="notification-ai"><b>Sentinel recommendation:</b> ${esc(item.aiMessage)}</p>${item.recoveryRequired?`<div class="recovery-actions"><button data-recovery-action="refund" data-incident-id="${esc(item.incidentId)}">Request refund</button><button class="secondary" data-recovery-action="reorder" data-incident-id="${esc(item.incidentId)}">Reorder</button></div>`:''}</article>`).join(''):'<div class="notification-empty"><h1>No notifications yet</h1><p>When you place an order, its status updates will appear here.</p></div>';
+      const renderCard=item=>{
+        if(item.notificationType==='NETWORK_REORDER'){
+          const success=item.status==='REORDER_CREATED';
+          return `<article class="notification-card notification-reorder${success?' notification-reorder--success':''}">
+            <div><span class="status ${esc(item.severity)}">${success?'✓ REORDERED':'REORDER ATTEMPTED'}</span><small>${new Date(item.timestamp).toLocaleString()}</small></div>
+            <h2>${esc(item.title)}</h2>
+            <p>${esc(item.message)}</p>
+            <p><b>Product:</b> ${esc(item.productName)}<br><b>Original order:</b> ${esc(item.orderId)}${item.reorderOrderId?`<br><b>New order:</b> <a href="/order/${esc(item.reorderOrderId)}" class="reorder-link">${esc(item.reorderOrderId)} →</a>`:''}</p>
+            <p class="notification-ai notification-ai--reorder"><b>🤖 Sentinel Intelligence:</b> ${esc(item.aiMessage)}</p>
+          </article>`;
+        }
+        return `<article class="notification-card"><div><span class="status ${esc(item.severity)}">${esc(item.status)}</span><small>${new Date(item.timestamp).toLocaleString()}</small></div><h2>${esc(item.title)}</h2><p>${esc(item.message)}</p><p><b>Product:</b> ${esc(item.productName)}<br><b>Order:</b> ${esc(item.orderId)}<br><b>Payment:</b> ${esc(item.paymentStatus)} · <b>Order status:</b> ${esc(item.orderStatus)}</p><p class="notification-ai"><b>Sentinel recommendation:</b> ${esc(item.aiMessage)}</p>${item.recoveryRequired?`<div class="recovery-actions"><button data-recovery-action="refund" data-incident-id="${esc(item.incidentId)}">Request refund</button><button class="secondary" data-recovery-action="reorder" data-incident-id="${esc(item.incidentId)}">Reorder</button></div>`:''}</article>`;
+      };
+      const cards=data.notifications.length?data.notifications.map(renderCard).join(''):'<div class="notification-empty"><h1>No notifications yet</h1><p>When you place an order, its status updates will appear here.</p></div>';
       root.innerHTML=`<div class="notification-page"><header class="notification-header"><a href="/shop">NEXORA.</a><a href="/shop">Back to shop</a></header><main><p class="notification-eyebrow">YOUR ORDER UPDATES</p><h1>Notifications for ${esc(data.buyerName||buyer.name)}</h1><p class="notification-summary">${esc(data.summary)}</p><section class="notification-list">${cards}</section></main></div>`;
       bindRecovery(root);
     }catch(error){root.innerHTML=`<div class="notification-page"><main><h1>Notifications unavailable</h1><p>${esc(error.message)}</p><a href="/welcome">Enter your name</a></main></div>`}
