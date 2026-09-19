@@ -102,6 +102,8 @@
       const buyer=readBuyer();if(!buyer)throw Error('Enter your name first to view your notifications.');
       const res=await fetch('/api/notifications',{headers:{Authorization:'Bearer '+buyer.token}});
       const data=await res.json();if(!res.ok)throw Error(data.error||'Unable to load notifications.');
+      const paymentOrderIds=new Set((data.notifications||[]).filter(item=>item.notificationType==='PAYMENT_RECOVERY').map(item=>item.orderId));
+      data.notifications=(data.notifications||[]).filter(item=>item.notificationType!=='NETWORK_REORDER'||!paymentOrderIds.has(item.orderId));
       const renderCard=item=>{
         if(item.notificationType==='NETWORK_REORDER')return item.pending?renderPendingCard(item):renderDoneCard(item);
         return '<article class="notification-card"><div><span class="status '+esc(item.severity)+'">'+esc(item.status)+'</span><small>'+new Date(item.timestamp).toLocaleString()+'</small></div>'
