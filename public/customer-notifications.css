@@ -12,3 +12,39 @@
 /* Reorder toast banner */
 .reorder-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#15803d;color:#fff;padding:14px 22px;border-radius:10px;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.18);z-index:9999;animation:reorder-toast-in .3s ease;white-space:nowrap}
 @keyframes reorder-toast-in{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* AI live-reorder pending card */
+.ai-reorder-pending{border-color:#fbbf24!important;background:#fffbeb!important}
+.ai-reorder-pending .ai-reorder-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.ai-reorder-title{color:#92400e;margin:0 0 4px}
+.ai-reorder-sub{color:#78350f;font-size:13px;margin:0 0 14px}
+.ai-reorder-ids{font-size:12px;color:#6b7280;margin-top:12px}
+
+/* AI steps panel */
+.ai-steps-panel{background:#1e1b4b;border-radius:10px;padding:14px 16px;margin-bottom:4px}
+.ai-steps-label{color:#a5b4fc;font-size:12px;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.ai-steps{display:flex;flex-direction:column;gap:7px}
+.ai-step{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:7px;background:rgba(255,255,255,.05);color:#c7d2fe;font-size:13px;opacity:.45;transition:opacity .25s,background .25s}
+.ai-step b{display:block;font-weight:600}
+.ai-step small{display:block;font-size:11px;color:#818cf8;margin-top:1px}
+.ai-step-icon{font-size:16px;line-height:1;padding-top:1px;flex-shrink:0}
+.ai-step--active{opacity:1;background:rgba(99,102,241,.25);animation:ai-step-pulse .8s ease infinite alternate}
+.ai-step--done{opacity:1;background:rgba(34,197,94,.12);color:#bbf7d0}
+.ai-step--done small{color:#86efac}
+.ai-step--error{opacity:1;background:rgba(239,68,68,.12);color:#fecaca}
+@keyframes ai-step-pulse{from{background:rgba(99,102,241,.2)}to{background:rgba(99,102,241,.38)}}
+.ai-status-text{color:#818cf8;font-size:12px;margin-top:10px;font-style:italic}
+
+/* AI brain spin */
+.ai-brain-spin{display:inline-block;animation:brain-spin 2s linear infinite}
+@keyframes brain-spin{0%{transform:rotate(0deg)}25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}100%{transform:rotate(0deg)}}
+
+/* Done card after animation completes */
+.ai-reorder-done{border-color:#d1fae5!important;background:#f0fdf4!important}
+.ai-reorder-done-inner{display:flex;align-items:flex-start;gap:16px}
+.ai-done-badge{width:44px;height:44px;border-radius:50%;background:#16a34a;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.ai-done-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.ai-done-ids{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;margin:10px 0}
+.ai-done-note{display:flex;align-items:flex-start;gap:8px;background:#f0fdf4;border-left:3px solid #22c55e;border-radius:4px;padding:9px 11px;margin-top:10px}
+.ai-brain{font-size:18px;flex-shrink:0;padding-top:1px}
+.ai-done-note p{margin:0;font-size:13px;color:#166534}

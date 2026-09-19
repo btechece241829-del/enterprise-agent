@@ -48,6 +48,7 @@ Sentinel records the evidence, opens a recovery case for that customer, offers *
 | **Storefront** | Product browsing, category filtering, search, cart, order history, and responsive styling. |
 | **Name-based buyer entry** | Customers enter a name to establish a shopping session; no buyer password is required. |
 | **Checkout scenarios** | Four numbered, mutually exclusive choices demonstrate successful orders, network failure, and payment failure. |
+| **Critical network AI recovery** | Choice 2 queues an AI recovery record at checkout. Opening `/notification` triggers a live 4-step animated sequence — detect, analyse, reorder, confirm — before placing the replacement order in real time. |
 | **Customer recovery** | Payment settlement mismatches open a customer-specific recovery case with Refund / Reorder choices. |
 | **Operations overview** | Transaction metrics, payment failures, recovery cases, refund requests, and reorder counts. |
 | **Detailed logs** | Order/payment results, network metrics, decision details, ticket-style inspection, and PDF reports. |
@@ -67,6 +68,10 @@ flowchart LR
     API <--> Store[(data.json)]
     API --> Recovery[Customer recovery rules]
     Recovery --> Alerts[Refund / Reorder notification]
+    API --> AI[AI recovery layer]
+    AI -->|Critical network| Queue[PENDING_AI_REORDER]
+    Queue -->|Notification page opens| Animate[4-step live animation]
+    Animate -->|POST network-reorder| Confirm[Replacement order created]
     API --> Analysis[Incident analysis + local learning]
     Analysis --> Groq[Groq chat]
     API --> Prediction[Investigation + projections]
@@ -142,17 +147,19 @@ The checkout UI deliberately displays only **1**, **2**, **3**, and **4**. Their
 | Choice | Internal scenario | Expected result |
 | --- | --- | --- |
 | **1** | Safe network | Confirmed order; safe metrics recorded. |
-| **2** | Critical network | Failed order; latency `300ms`, packet loss `3%`, and error rate `3%` recorded. |
+| **2** | Critical network | Failed order; latency `300ms`, packet loss `3%`, and error rate `3%` recorded. A `PENDING_AI_REORDER` recovery record is created — **no reorder at checkout**. |
 | **3** | Payment succeeds | Confirmed simulated payment and order. |
 | **4** | Payment failure | Failed order; customer debit / merchant non-receipt recorded; recovery case opened. |
 
 Only one radio option can be selected. Choices 1, 3, and 4 use simulated safe network metrics of `120ms` latency, `0.5%` packet loss, and `0.5%` error rate. Choice 4 fails because of the payment scenario.
 
 1. Enter your name, add a product, and open checkout.
-2. Select **4** and click **Place order**.
-3. Open `/notification` in the same buyer session.
-4. Choose **Request refund** or **Reorder**.
-5. Inspect `/dashboard/logs`, `/deals`, and `/dashboard/prediction` from the appropriate session.
+2. Select **2** and click **Place order** — the server queues a `PENDING_AI_REORDER` record, no reorder yet.
+3. Open `/notification` in the same buyer session — the card appears immediately and the 4-step AI animation begins automatically.
+4. Watch Sentinel detect the failure, analyse risk, execute the reorder, and confirm the replacement order live.
+5. The card flips to a green confirmed state with the new order ID and a toast banner appears.
+6. For the **payment failure** flow, select **4** at checkout, then open `/notification` and choose **Request refund** or **Reorder**.
+7. Inspect `/dashboard/logs`, `/deals`, and `/dashboard/prediction` from the appropriate operations session.
 
 ```mermaid
 flowchart TD
