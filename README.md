@@ -11,7 +11,7 @@ A connected shopping demo that turns checkout failures into traceable incidents,
 ![Intelligence](https://img.shields.io/badge/Intelligence-Groq%20GPT--OSS%2020B-172b2a?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-b99741?style=flat-square)
 
-[View deployed demo](https://lasyep.vercel.app) · [Explore the code](https://github.com/btechece241829-del/enterprise-agent) · [Quick start](#quick-start) · [Prediction dashboard](#investigation--business-projection)
+[View deployed Prototype](https://24m9wh4s-8000.inc1.devtunnels.ms) · [Explore the code](https://github.com/btechece241829-del/enterprise-agent) · [DEMO VIDEO](https://drive.google.com/file/d/1Nop94394SsmdqDL3ysuKSwmM9w2w-uVU/view) · [Prediction dashboard](#investigation--business-projection)
 
 </div>
 
